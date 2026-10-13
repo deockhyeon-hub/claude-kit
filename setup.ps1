@@ -72,7 +72,7 @@ try {
         git -C $GiverDir pull --ff-only origin main
         if ($LASTEXITCODE -ne 0) { Warn '최신화 실패 - 이 컴퓨터에서 고친 내용이 있는지 확인하세요. 설치는 계속합니다.' }
     } else {
-        git clone $GiverRepo $GiverDir; Check 'giver-pack 내려받기'
+        git clone -c core.longpaths=true $GiverRepo $GiverDir; Check 'giver-pack 내려받기'
         git -C $GiverDir remote add upstream $GiverUpstream
     }
     Ok $GiverDir
@@ -82,9 +82,10 @@ try {
         git -C $GptakuDir pull --ff-only
         if ($LASTEXITCODE -ne 0) { Warn '최신화 실패 - 기존 버전으로 계속합니다.' }
     } else {
-        git clone --depth 1 $GptakuRepo $GptakuDir; Check 'gptaku_plugins 내려받기'
+        git clone -c core.longpaths=true --depth 1 $GptakuRepo $GptakuDir; Check 'gptaku_plugins 내려받기'
     }
-    git -C $GptakuDir submodule update --init --depth 1 plugins/insane-search; Check 'insane-search 내려받기'
+    # 폴더 경로가 긴 PC(사용자 이름이 길거나 OneDrive 아래 등)에서도 받아지도록 긴 경로 허용
+    git -c core.longpaths=true -C $GptakuDir submodule update --init --depth 1 plugins/insane-search; Check 'insane-search 내려받기'
     Ok $GptakuDir
 
     # 3. Claude Code에 등록 / 설치 ----------------------------------------
